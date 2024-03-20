@@ -8,6 +8,7 @@
 #define GINT_BASE64_DIGIT_NORMALIZER 0x3f
 typedef struct {
   unsigned long long value[GINT_LENGTH];
+  int length;
 } gint;
 void update(gint a){
   int temp,i;
@@ -44,6 +45,7 @@ gint grandom(int digit){
   long long remainder = digit%GINT_DIGIT;
   long long temp =1;
   long long normalizer = 0;
+  a.length=remainder?length+1:length;
   int i=0;
   while(i<remainder){
     normalizer+=temp;
