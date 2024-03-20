@@ -280,8 +280,8 @@ int giseven(gint* a){
   return !(a->value[0]&1);
 }
 /// this function is to do the fast power mod n for gint. 
-/// will return a^b mod n
-void gmodpower(gint *n,gint *a,gint *b,gint* s){
+/// s= a^b mod n
+gint gmodpower(gint *n,gint *a,gint *b,gint* s){
   gint qq;
   gint *q =&qq;
   gdivide(a,n,q);
@@ -297,8 +297,8 @@ void gmodpower(gint *n,gint *a,gint *b,gint* s){
   }
 }
 /// this function is to solve the eqution ed = 1 mod n 
-  ///ed \equiv 1 \mod n
-  ///if gcd(e,n)!=1 then return (gint)0;
+/// And d satisfies n | ed-1
+  ///if gcd(e,n)!=1 then int2gint(d,0);
 void ginverse(gint* n,gint* e,gint* d){
   gclone(n,d);
   gint*temp, qqqq, p11,p22;
