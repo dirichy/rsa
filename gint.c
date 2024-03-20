@@ -40,19 +40,19 @@ void update(gint* a){
     length--;
   }
   a->length=length+1;
-  if(!a->length){
+  if(a->length<=0){
     a->length=1;
   }
 }
 ///This function is to shift one right digit in gint a.
 ///a will convert to the right-shifted version.
 void gshiftright(gint* a){
-  a->value[0]>>=1;
-  int temp;
-  for(int i=1;i<GINT_LENGTH;i++){
-    temp=a->value[i]&1;
-    a->value[i]>>=1;
-    a->value[i-1]+=temp<<GINT_DIGIT;
+  a->value[0]=(a->value[0])>>1;
+  unsigned long long temp;
+  for(int i=0;i<GINT_LENGTH-1;i++){
+    temp=(a->value[i+1])&1;
+    a->value[i+1]=(a->value[i+1])>>1;
+    a->value[i]=a->value[i]+(temp<<(GINT_DIGIT-1));
   }
   update(a);
 }
@@ -158,7 +158,7 @@ void int2gint(gint* b,int a){
 }
 ///Inner function, don't use it manually
 int gint_le_or_leq_gint(gint* a,gint* b,int flag){
-  for(int i=0;i<GINT_LENGTH;i++){
+  for(int i=GINT_LENGTH-1;i>=0;i--){
     if(a->value[i]<b->value[i]) return 1;
     if(a->value[i]>b->value[i]) return 0;
   }
@@ -182,7 +182,7 @@ int gintgegint(gint* a,gint* b){
 ///This fuction is to judge wheter a<=b or not.
 ///If a<=b, then return 1, else 0 
 int gintgeqgint(gint* a,gint* b){
-  return !gintleqgint(a,b);
+  return !gintlegint(a,b);
 }
 ///This fuction is to add two great numbers a ,b
 ///And a will be the result of a+b
@@ -199,7 +199,7 @@ void gminus(gint* a, gint* b){
   for(int i =0;i < GINT_LENGTH;i++ ){
     if(a->value[i]>=b->value[i]){
       a->value[i]-=b->value[i];
-      break;
+      continue;
     }
     k=i+1;
     while(k<GINT_LENGTH && !(a->value[k])){
@@ -236,6 +236,7 @@ void gdivide(gint* a,gint* b,gint* q){
   int Scale=a->length-b->length;
   if(Scale>0){
     gShiftLeft(b,Scale-1);
+    Scale-=1;
   }
   int scale=0;
   while(gintlegint(b,a)&((b->value[GINT_LENGTH-1])<=0x8000000000000000)){
@@ -260,10 +261,11 @@ void gdivide(gint* a,gint* b,gint* q){
   }
   if(gintleqgint(b,a)){
     gminus(a,b);
-    q->value[Scale]|=1<<scale;
+    q->value[0]+=1;
   }
   update(a);
   update(q);
+  update(b);
 }
 int main(){
   srand((unsigned)time(NULL));
@@ -274,15 +276,15 @@ int main(){
   // update(&a);
   gint a;
   gint b;
-  int2gint(&a,14);
+  int2gint(&a,1);
   int2gint(&b,2);
-  char str[GINT_DIGIT_BASE64*GINT_LENGTH+1]={"\0"};
+  a.value[1]=1;
+  update(&a);
   gint q;
   gdivide(&a,&b,&q);
-  gprint(a,str);
-  printf("%s\n",str);
-  gprint(q,str);
-  printf("%s",str);
+  gdisplay(a);
+  gdisplay(b);
+  gdisplay(q);
   // int a = 1073741822;
   // a=a>>30;
   // printf("%d",a);
