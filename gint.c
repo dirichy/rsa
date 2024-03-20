@@ -122,6 +122,7 @@ void gprint(gint a,char* str){
     base64(a.value[i],str);
     str=str+GINT_DIGIT_BASE64;
   }
+  *str='\0';
 }
 void gdisplay(gint a){
   char str[GINT_LENGTH*GINT_DIGIT_BASE64+1]={"\0"};
@@ -414,8 +415,22 @@ void grandomprime(gint *p,int digits,int* knownprime,int sizeofknownprime){
     gintaddint(p,2);
   }
 }
+char* stradd(char* a,char*b,char*c){
+  int i=0;
+  while(*a){
+    c[i]=*a;
+    i++;
+    a++;
+  }
+  while(*b){
+    c[i]=*b;
+    i++;
+    b++;
+  }
+  return c;
+}
 void gen(int digits,char* name){
-  gint p,q,n,phin;
+  gint p,q,n,phin,e,d,temp1,temp2;
   int knownprime[3]={2,3,5};
   int sizeofknownprime=3;
   grandomprime(&p,digits,knownprime,sizeofknownprime);
@@ -426,12 +441,58 @@ void gen(int digits,char* name){
   gintminusint(&q,1);
   gclone(&p,&phin);
   gmutiply(&phin,&q);
+  int2gint(&e,0);
+  while(ginteqint(&e,0)){
+    grandom(&d,digits);
+    gclone(&n,&temp1);
+    gclone(&d,&temp2);
+    ginverse(&temp1,&temp2,&e);
+  }
+  char str[digits/3+128];
+  if(name[0]){
+    name="rsabw";
+  }
+  FILE*file=fopen(stradd(name,".pub",str),"w");
+  if (file != NULL){
+    gprint(e,str);
+    fprintf(file,"%s",str);
+    fclose(file);
+  }
+  else{
+    perror("Error opening file");
+  }
+  file=fopen(stradd(name,".sec",str),"w");
+  if (file != NULL){
+    gprint(d,str);
+    fprintf(file,"%s",str);
+    fclose(file);
+  }
+  else{
+    perror("Error opening file");
+  }
+  file=fopen(stradd(name,".n",str),"w");
+  if (file != NULL){
+    gprint(n,str);
+    fprintf(file,"%s",str);
+    fclose(file);
+  }
+  else{
+    perror("Error opening file");
+  }
+  file=fopen(stradd(name,".phin",str),"w");
+  if (file != NULL){
+    gprint(phin,str);
+    fprintf(file,"%s",str);
+    fclose(file);
+  }
+  else{
+    perror("Error opening file");
+  }
 }
 int main(){
-  gint a,b,c,d,e;
+  gen(30,"byl");
   // int2gint(&b,1023);
   // int2gint(&c,10);
-  gdisplay(a);
   // gmodpower(&b,&a,&c,&d);
   // gdisplay(d);
 }
