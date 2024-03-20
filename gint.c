@@ -277,7 +277,7 @@ int main(){
   gint a;
   gint b;
   int2gint(&a,1);
-  int2gint(&b,2);
+  int2gint(&b,8);
   a.value[1]=1;
   update(&a);
   gint q;
