@@ -1,15 +1,25 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+///Brief introduction: We define a type for a great number and design a series number to operat numbers in the type. 
+///Consider a great number as an array with size GINT_LENGTH. 
+///Each element in the array is long long int type. We only use GINT_DIGIT digits of element 
+///to store some of digits of the great number. 
+///Each element in the array represent GINT_DIGIT_BASE64 digits in BASE64 coding.
+///In some case, we may need to abstract particular digits, and we use GINT_BASE64_DIGIT_NORMALIZER to 
+///obtain the lowest GINT_BASE64_DIGIT_NORMALIZER digits of a number.
 #define GINT_LENGTH 35
 #define GINT_DIGIT 24
 #define GINT_DIGIT_BASE64 4
 #define GINT_DIGIT_MAX 0xffffff
 #define GINT_BASE64_DIGIT_NORMALIZER 0xf
+///This is to define a type for great numbers, we call it gint.
 typedef struct {
   unsigned long long value[GINT_LENGTH];
   int length;
 } gint;
+///This function is to deal with carry when calculating and the size of a gint number when it comes to 
+///some operation between int numbers and gint numbers.
 void update(gint* a){
   int temp,i;
   for(i=0;i<GINT_LENGTH-1;i++){
@@ -25,6 +35,8 @@ void update(gint* a){
   }
   a->length=length+1;
 }
+///This function is to shift one right digit in gint a.
+///a will convert to the right-shifted version.
 void gshiftright(gint* a){
   a->value[0]>>=1;
   int temp;
@@ -35,12 +47,16 @@ void gshiftright(gint* a){
   }
   update(a);
 }
+///This function is to shift one left digit in gint a.
+///a will convert to the left-shifted version.
 void gshiftleft(gint* a){
   for(int i=0;i<GINT_LENGTH;i++){
     a->value[i]<<=1;
   }
   update(a);
 }
+///This function is to shift i right digits in gint a.
+///a will convert to the right-shifted version.
 void gShiftRight(gint* a,int i){
   int j=0;
   for(j=0;i<GINT_LENGTH;j++,i++){
@@ -52,6 +68,8 @@ void gShiftRight(gint* a,int i){
   }
   update(a);
 }
+///This function is to shift i left digits in gint a.
+///a will convert to the left-shifted version.
 void gShiftLeft(gint* a,int i){
   int j=0;
   i=GINT_LENGTH-1-i;
@@ -64,6 +82,8 @@ void gShiftLeft(gint* a,int i){
   }
   update(a);
 }
+///This function is to convert an unsigned long long number to string characters by BASE64.
+///The output will be stored in str.
 void base64(unsigned long long a,char* str){
   char chars[65]="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
   int temp;
@@ -74,12 +94,17 @@ void base64(unsigned long long a,char* str){
     a=a>>6;
   }
 }
+///This function is to print out a great number by BASE64 codes
+///The output will be stored in str, and if you want to print str out 
+///you will need printf function to assist you.
 void gprint(gint a,char* str){
   for(int i=0;i<a.length;i++){
     base64(a.value[i],str);
     str=str+GINT_DIGIT_BASE64;
   }
 }
+///This function is to generate a random gint number.
+///It will return the gint number.
 gint grandom(int digit){
   gint a;
   int length = digit/GINT_DIGIT;
@@ -106,6 +131,8 @@ gint grandom(int digit){
   }
   return a;
 }
+///This function is to convert an int number to a gint number.
+///It will return gint number b converted by int a
 gint int2gint(int a){
   gint b;
   b.value[0]=(unsigned long long)a;
@@ -115,6 +142,7 @@ gint int2gint(int a){
   update(&b);
   return b;
 }
+///Inner function, don't use it manually
 int gint_le_or_leq_gint(gint* a,gint* b,int flag){
   for(int i=0;i<GINT_LENGTH;i++){
     if(a->value[i]<b->value[i]) return 1;
@@ -122,24 +150,36 @@ int gint_le_or_leq_gint(gint* a,gint* b,int flag){
   }
   return flag;
 }
+///This fuction is to judge wheter a<b or not.
+///If a < b, then return 1, else 0 
 int gintlegint(gint* a,gint* b){
   return gint_le_or_leq_gint(a,b,0);
 }
+///This fuction is to judge wheter a>=b or not.
+///If a>=b, then return 1, else 0 
 int gintleqgint(gint* a,gint* b){
   return gint_le_or_leq_gint(a,b,1);
 }
+///This fuction is to judge wheter a>b or not.
+///If a>b, then return 1, else 0 
 int gintgegint(gint* a,gint* b){
   return !gintleqgint(a,b);
 }
+///This fuction is to judge wheter a<=b or not.
+///If a<=b, then return 1, else 0 
 int gintgeqgint(gint* a,gint* b){
   return !gintleqgint(a,b);
 }
+///This fuction is to add two great numbers a ,b
+///And a will be the result of a+b
 void gadd(gint* a, gint* b){
   for(int i =0;i < GINT_LENGTH;i++ ){
     a->value[i]+=b->value[i];
   }
   update(a);
 }
+///This fuction is to use a minus b 
+///And a will be the result of a-b
 void gminus(gint* a, gint* b){
   int k;
   for(int i =0;i < GINT_LENGTH;i++ ){
@@ -158,6 +198,8 @@ void gminus(gint* a, gint* b){
   }
   update(a);
 }
+///This function is to use a mutiply b
+///And a will be the result of a*b
 void gmutiply(gint* a,gint* b){
   for(int i=GINT_LENGTH-1;i>=0;i--){
     a->value[i]*=b->value[0];
@@ -184,4 +226,5 @@ int main(){
   // int a = 1073741822;
   // a=a>>30;
   // printf("%d",a);
+
 }
