@@ -18,14 +18,14 @@ typedef struct {
   unsigned long long value[GINT_LENGTH];
   int length;
 } gint;
-///This function is to deal with carry when calculating and the size of a gint number when it comes to 
-///some operation between int numbers and gint numbers.
 void gclone(gint* a,gint* b){
   for(int i=0;i<GINT_LENGTH;i++){
     b->value[i]=a->value[i];
   }
   b->length=a->length;
 }
+///This function is to deal with carry when calculating and the size of a gint number when it comes to 
+///some operation between int numbers and gint numbers.
 void update(gint* a){
   int temp,i;
   for(i=0;i<GINT_LENGTH-1;i++){
@@ -215,6 +215,8 @@ void gmutiply(gint* a,gint* b){
   }
   update(a);
 }
+///This function is to realize a = qb +r. And it turns out that 
+///a = r, q is q
 void gdivide(gint* a,gint* b,gint* q){
   int2gint(q,0);
   if(gintleqgint(b,q)){
@@ -254,6 +256,70 @@ void gdivide(gint* a,gint* b,gint* q){
   if(gintleqgint(b,a)){
     gminus(a,b);
     q->value[Scale]|=1<<scale;
+  }
+}
+int ginteqint(gint*a,int b){
+  if(a->value[0]!=b) return 0;
+  for(int i=1;i<GINT_LENGTH;i++){
+    if(a->value[i]) return 0;
+  }
+  return 1;
+}
+int giseven(gint* a){
+  return !(a->value[0]&1);
+}
+/// this function is to do the fast power mod n for gint. 
+/// will return a^b mod n
+gint gmodpower(gint *n,gint *a,gint *b,gint* s){
+  gint qq;
+  gint *q =&qq;
+  gdivide(a,n,q);
+  int2gint(s,1);
+  while(!ginteqint(b,0)){
+    if(giseven(b)) {
+      gmutiply(s,a);
+      gdivide(s,n,q);
+    }
+    gshiftright(b);
+    gmutiply(a,a);
+    gdivide(a,n,q);
+  }
+}
+/// this function is to solve the eqution ed = 1 mod n 
+  ///ed \equiv 1 \mod n
+  ///if gcd(e,n)!=1 then return (gint)0;
+void ginverse(gint* n,gint* e,gint* d){
+  gclone(n,d);
+  gint*temp, qqqq, p11,p22;
+  gint* q=&qqqq,*pk_1=&p11,*pk_2=&p22;
+  gdivide(n,e,q);
+  int i=1;
+  int2gint(pk_1,0);
+  int2gint(pk_2,1);
+  while(!ginteqint(n,0)){
+    i=i + 1;
+    gmutiply(q,pk_2);
+    gadd(q,pk_1);
+    gdivide(q,d,pk_1);
+    temp = pk_1;
+    pk_1=pk_2;
+    pk_2=q;
+    q=temp;
+    temp = e;
+    e = n;
+    n = temp;
+    gdivide(n,e,q);
+  }
+  if(!ginteqint(e,1)){
+    int2gint(d,0);
+  }
+  else{
+  if (i%2){
+    gclone(pk_2,d);
+  }
+  else{
+    gminus(d,pk_2);
+  }
   }
 }
 int main(){
