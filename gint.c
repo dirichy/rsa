@@ -281,7 +281,7 @@ int giseven(gint* a){
 }
 /// this function is to do the fast power mod n for gint. 
 /// will return a^b mod n
-gint gmodpower(gint *n,gint *a,gint *b,gint* s){
+void gmodpower(gint *n,gint *a,gint *b,gint* s){
   gint qq;
   gint *q =&qq;
   gdivide(a,n,q);
@@ -334,25 +334,13 @@ void ginverse(gint* n,gint* e,gint* d){
   }
 }
 int main(){
-  srand((unsigned)time(NULL));
-  // printf("%lld",a.value[1]);
-  // gmutiply(&a,&b);
-  // gshiftright(&a);
-  // printf("%lld",a.value[0]);
-  // update(&a);
-  gint a;
-  gint b;
-  int2gint(&a,1);
-  int2gint(&b,8);
-  a.value[1]=1;
-  update(&a);
-  gint q;
-  gdivide(&a,&b,&q);
-  gdisplay(a);
-  gdisplay(b);
-  gdisplay(q);
-  // int a = 1073741822;
-  // a=a>>30;
-  // printf("%d",a);
-
+  gint a,b,c,d,e;
+  int2gint(&a,3);
+  int2gint(&b,0xfffffe);
+  ginverse(&b,&a,&c);
+  int2gint(&a,3);
+  int2gint(&b,0xfffffe);
+  gmutiply(&c,&a);
+  gdivide(&c,&b,&e);
+  gdisplay(c);
 }
