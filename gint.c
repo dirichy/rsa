@@ -88,6 +88,7 @@ void gprint(gint a,char* str){
     str=str+GINT_DIGIT_BASE64;
   }
 }
+
 gint grandom(int digit){
   gint a;
   int length = digit/GINT_DIGIT;
