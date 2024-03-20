@@ -12,7 +12,7 @@ printf("              then you can appoint the source of intput, otherwise the i
 printf("              And you can also appoint a position to store the encoded context by an output flag -o, if not \n");
 printf("              your output will be a form of stdin.\n");
 printf("-d [<name>] : to decode context by secret key, same as -e.\n");
-printf("-s [<name>] : to encoded context by ")
+printf("-s [<name>] : to encoded context by ");
 }
 void work(){
   printf("work\n");
