@@ -40,6 +40,9 @@ void update(gint* a){
     length--;
   }
   a->length=length+1;
+  if(!a->length){
+    a->length=1;
+  }
 }
 ///This function is to shift one right digit in gint a.
 ///a will convert to the right-shifted version.
@@ -110,6 +113,11 @@ void gprint(gint a,char* str){
     base64(a.value[i],str);
     str=str+GINT_DIGIT_BASE64;
   }
+}
+void gdisplay(gint a){
+  char str[GINT_LENGTH*GINT_DIGIT_BASE64+1]={"\0"};
+  gprint(a,str);
+  printf("%s\n",str);
 }
 ///This function is to generate a random gint number.
 ///It will return the gint number.
@@ -239,10 +247,9 @@ void gdivide(gint* a,gint* b,gint* q){
     Scale++;
   }
   while(Scale || scale){
-  printf("%d %d\n",Scale,scale);
     if(gintleqgint(b,a)){
       gminus(a,b);
-      q->value[Scale]|=1<<scale;
+      q->value[Scale]+=1<<scale;
     }
     scale--;
     gshiftright(b);
@@ -255,6 +262,8 @@ void gdivide(gint* a,gint* b,gint* q){
     gminus(a,b);
     q->value[Scale]|=1<<scale;
   }
+  update(a);
+  update(q);
 }
 int main(){
   srand((unsigned)time(NULL));
@@ -268,8 +277,6 @@ int main(){
   int2gint(&a,14);
   int2gint(&b,2);
   char str[GINT_DIGIT_BASE64*GINT_LENGTH+1]={"\0"};
-  gprint(a,str);
-  printf("%s\n",str);
   gint q;
   gdivide(&a,&b,&q);
   gprint(a,str);
