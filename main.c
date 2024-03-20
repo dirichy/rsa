@@ -103,12 +103,51 @@ gint randomprime(){
   }
   return a;
 }
+//TODO:complete this function
+int gle(gint a,gint b){
+  return a.value<b.value;
+}
+int gequal(gint a, gint b){
+  return a.value == b.value;
+}
+int giszero(gint a){
+  return a.value==0;
+}
+int gintequalint(gint a,int b){
+  return a.value==b;
+}
+gint gclone(gint a){
+  gint b;
+  b.value=a.value;
+  return b;
+}
 /// this function is to solve the eqution ed = 1 mod n 
 gint ginverse(gint n,gint e){
+  gint norigin = gclone(n);
   gint d;
   //ed \equiv 1 \mod n
   //if gcd(e,n)!=1 then return (gint)0;
-  return d;
+  gint r=gmod(n,e);
+  int i=1;
+  gint pk_1=gzero();
+  gint q,a;
+  gint pk_2 =int2gint(1);  
+  q = gdivide(n,e); 
+  while(!giszero(r)){
+    i=i + 1;
+    a = pk_2 ;
+    pk_2 = gadd(gmultiply(q,pk_2),pk_1);
+    pk_2=gmod(pk_2,norigin);
+    pk_1 = a;
+    n = e;
+    e = r;
+    q = gdivide(n,e);
+    r = gmod (n,e);
+  }
+  if(!gintequalint(e,1)){
+    return gzero();
+  }
+  return i%2?pk_2:gminus(norigin,pk_2);
 }
 /// this function is to do the encode or decode
 /// will return message^secret mod n
@@ -117,7 +156,7 @@ gint gcode(gint n,gint message,gint secret){
 }
 
 int main(){
-  gdisplay(gmodpower(int2gint(999999),int2gint(89898989),int2gint(178990000)));
+  gdisplay(ginverse(int2gint(211),int2gint(11)));
   // gint a=randomprime();
   // gdisplay(a);
   return 0;
