@@ -131,7 +131,7 @@ gint ginverse(gint n,gint e){
   gint norigin = gclone(n);
   //ed \equiv 1 \mod n
   //if gcd(e,n)!=1 then return (gint)0;
-  gint r=gmod(n,e);
+  gint r=imod(n,e);
   int i=1;
   gint pk_1=gzero();
   gint q,a;
