@@ -11,11 +11,8 @@ printf("              otherwise it will be encoded by the default key. If you us
 printf("              then you can appoint the source of intput, otherwise the intput form is stdin.\n");
 printf("              And you can also appoint a position to store the encoded context by an output flag -o, if not \n");
 printf("              your output will be a form of stdin.\n");
-printf("-d [<name>] : to decode context by secret key, you can appoint one pair of your keys by optional parameter <name>,\n");
-printf("              otherwise it will be decoded by the default key. If you use flag -d with an intput flag -i,\n");
-printf("              then you can appoint the source of intput, otherwise the intput form is stdin.\n");
-printf("              And you can also appoint a position to store the decoded context by an output flag -o, if not \n");
-printf("              your output will be a form of stdin.\n");
+printf("-d [<name>] : to decode context by secret key, same as -e.\n");
+printf("-s [<name>] : to encoded context by ")
 }
 void work(){
   printf("work\n");
