@@ -60,6 +60,9 @@ gint grandom(int digit){
   }
   return a;
 }
+gint gadd(gint a, gint b){
+
+}
 // gint int2gint(int a){
 //
 // }
