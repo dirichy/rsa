@@ -103,7 +103,6 @@ gint randomprime(){
   }
   return a;
 }
-//TODO:complete this function
 int gle(gint a,gint b){
   return a.value<b.value;
 }
