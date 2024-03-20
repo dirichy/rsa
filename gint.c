@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-#define GINT_LENGTH 35
+#define GINT_LENGTH 99999
 #define GINT_DIGIT 30
 #define GINT_DIGIT_BASE64 5
 #define GINT_DIGIT_MAX 0x3fffffff
@@ -65,7 +65,7 @@ gint grandom(int digit){
 // }
 int main(){
   // srand((unsigned)time(NULL));
-  gint a=grandom(1024);
+  gint a=grandom(999999);
   char str[GINT_DIGIT_BASE64*GINT_LENGTH+1]={"\0"};
   gprint(a,str);
   printf("%s",str);
