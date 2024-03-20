@@ -44,6 +44,15 @@ void update(gint* a){
     a->length=1;
   }
 }
+
+int gequal(gint*a,gint*b){
+  for(int i=0;i<GINT_LENGTH;i++){
+    if(a->value[i]!=b->value[i]){
+      return 0;
+    }
+  }
+  return 1;
+}
 ///This function is to shift one right digit in gint a.
 ///a will convert to the right-shifted version.
 void gshiftright(gint* a){
@@ -281,13 +290,13 @@ int giseven(gint* a){
 }
 /// this function is to do the fast power mod n for gint. 
 /// s= a^b mod n
-gint gmodpower(gint *n,gint *a,gint *b,gint* s){
+void gmodpower(gint *n,gint *a,gint *b,gint* s){
   gint qq;
   gint *q =&qq;
   gdivide(a,n,q);
   int2gint(s,1);
   while(!ginteqint(b,0)){
-    if(giseven(b)) {
+    if(!giseven(b)) {
       gmutiply(s,a);
       gdivide(s,n,q);
     }
@@ -295,6 +304,47 @@ gint gmodpower(gint *n,gint *a,gint *b,gint* s){
     gmutiply(a,a);
     gdivide(a,n,q);
   }
+}
+int checker[10]={2,3,5,7,11,13,17,19,23,29};
+int gisprime(gint*a,int*knownprime,int sizeofknownprime){
+  gint bb,cc,dd,ee,*b=&bb,*c=&cc,*d=&dd,*e=&ee;
+  int i=0,s=0,j=0;
+  for(i=0;i<sizeofknownprime;i++){
+    int2gint(b,knownprime[i]);
+    gclone(a,c);
+    gdivide(c,b,d);
+    if(ginteqint(c,0)){
+      return 0;
+    }
+  }
+  for(i=0;i<10;i++){
+    s=0;
+    gclone(a,c);
+    int2gint(b,1);
+    gminus(c,b);
+    int2gint(b,checker[i]);
+    while(giseven(c)){
+      gshiftright(c);
+      s++;
+    }
+    gmodpower(a,b,c,d);
+    if(ginteqint(d,1)) continue;
+    gclone(a,b);
+    int2gint(c,1);
+    gminus(b,c);
+    for(j=0;j<s;j++){
+      printf("%lld\n",d->value[0]);
+      gmutiply(d,d);
+      gdivide(d,a,c);
+      gdisplay(*a);
+      if(gequal(d,b)){
+        continue;
+      }
+    }
+      printf("%d\n",checker[i]);
+      return 0;
+  }
+  return 1;
 }
 /// this function is to solve the eqution ed = 1 mod n 
 /// And d satisfies n | ed-1
@@ -335,12 +385,12 @@ void ginverse(gint* n,gint* e,gint* d){
 }
 int main(){
   gint a,b,c,d,e;
-  int2gint(&a,3);
-  int2gint(&b,0xfffffe);
-  ginverse(&b,&a,&c);
-  int2gint(&a,3);
-  int2gint(&b,0xfffffe);
-  gmutiply(&c,&a);
-  gdivide(&c,&b,&e);
-  gdisplay(c);
+  int2gint(&a,37);
+  // int2gint(&b,1023);
+  // int2gint(&c,10);
+  int test[3]={2,3,5};
+  int n=3;
+  printf("%d\n",gisprime(&a,test,3));
+  // gmodpower(&b,&a,&c,&d);
+  // gdisplay(d);
 }
