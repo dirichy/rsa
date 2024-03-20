@@ -8,6 +8,7 @@
 #define GINT_BASE64_DIGIT_NORMALIZER 0x3f
 typedef struct {
   unsigned long long value[GINT_LENGTH];
+  int length;
 } gint;
 void update(gint a){
   int temp,i;
@@ -30,7 +31,7 @@ void base64(unsigned long long a,char* str){
   }
 }
 void gprint(gint a,char* str){
-  for(int i=0;i<GINT_LENGTH;i++){
+  for(int i=0;i<a.length;i++){
     base64(a.value[i],str);
     str=str+GINT_DIGIT_BASE64;
   }
@@ -42,6 +43,11 @@ gint grandom(int digit){
     a.value[i]=rand()&GINT_DIGIT_MAX;
   }
   long long remainder = digit%GINT_DIGIT;
+  if(remainder){
+    a.length=length+1;
+  }else{
+    a.length=length;
+  }
   long long temp =1;
   long long normalizer = 0;
   int i=0;
@@ -50,7 +56,7 @@ gint grandom(int digit){
     temp=temp<<1;
     i++;
   }
-    a.value[length]=rand()&normalizer;
+  a.value[length]=rand()&normalizer;
   normalizer = (normalizer+1)>>1;
   a.value[length]|=normalizer;
   i=length+1;
@@ -60,12 +66,13 @@ gint grandom(int digit){
   }
   return a;
 }
+
 // gint int2gint(int a){
 //
 // }
 int main(){
-  // srand((unsigned)time(NULL));
-  gint a=grandom(1024);
+  srand((unsigned)time(NULL));
+  gint a=grandom(30);
   char str[GINT_DIGIT_BASE64*GINT_LENGTH+1]={"\0"};
   gprint(a,str);
   printf("%s",str);
