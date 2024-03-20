@@ -67,7 +67,7 @@ gint grandom(){
 }
 /// this function is to judge whether a gint is a prime 
 int gisprime(gint a){
-  int b=a.value;
+  long long b=a.value;
   if(b<=1) return 0;
   for(long long i=2;i*i<=b;i++){
     if(b%i==0) return 0;
@@ -92,11 +92,17 @@ gint gzero(){
   a.value=0;
   return a;
 }
+int geven(gint a){
+  return !(a.value&1);
+}
 /// this function is to genetate a randomprime
 gint randomprime(){
   gint a;
   while(a.value<9999){
     a=grandom();
+  }
+  if(geven(a)){
+    a=gintaddint(a,1);
   }
   while(!gisprime(a)){
     a=gintaddint(a,2);
@@ -123,7 +129,6 @@ gint gclone(gint a){
 /// this function is to solve the eqution ed = 1 mod n 
 gint ginverse(gint n,gint e){
   gint norigin = gclone(n);
-  gint d;
   //ed \equiv 1 \mod n
   //if gcd(e,n)!=1 then return (gint)0;
   gint r=gmod(n,e);
@@ -155,8 +160,8 @@ gint gcode(gint n,gint message,gint secret){
 }
 
 int main(){
-  gdisplay(ginverse(int2gint(211),int2gint(11)));
-  // gint a=randomprime();
-  // gdisplay(a);
+  //gdisplay(ginverse(int2gint(211),int2gint(11)));
+   gint a=randomprime();
+   gdisplay(a);
   return 0;
 }
