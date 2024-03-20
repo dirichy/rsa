@@ -130,31 +130,29 @@ void gdisplay(gint a){
 }
 ///This function is to generate a random gint number.
 ///It will return the gint number.
-gint grandom(int digit){
-  gint a;
+void grandom(gint*a,int digit){
   int length = digit/GINT_DIGIT;
   for(int i=0;i<length;i++){
-    a.value[i]=rand()&GINT_DIGIT_MAX;
+    a->value[i]=rand()&GINT_DIGIT_MAX;
   }
   int remainder = digit%GINT_DIGIT;
   long long temp =1;
   long long normalizer = 0;
-  a.length=remainder?length+1:length;
+  a->length=remainder?length+1:length;
   int i=0;
   while(i<remainder){
     normalizer+=temp;
     temp=temp<<1;
     i++;
   }
-  a.value[length]=rand()&normalizer;
+  a->value[length]=rand()&normalizer;
   normalizer = (normalizer+1)>>1;
-  a.value[length]|=normalizer;
+  a->value[length]|=normalizer;
   i=length+1;
   while(i<GINT_LENGTH){
-    a.value[i]=0;
+    a->value[i]=0;
     i++;
   }
-  return a;
 }
 ///This function is to convert an int number to a gint number.
 ///It will return gint number b converted by int a
@@ -201,6 +199,12 @@ void gadd(gint* a, gint* b){
   }
   update(a);
 }
+void gintaddint(gint* a, int b){
+    a->value[0]+=b;
+  update(a);
+}
+
+
 ///This fuction is to use a minus b 
 ///And a will be the result of a-b
 void gminus(gint* a, gint* b){
@@ -219,6 +223,23 @@ void gminus(gint* a, gint* b){
     a->value[i]+=GINT_DIGIT_MAX+1;
     a->value[i]-=b->value[i];
   }
+  update(a);
+}
+
+void gintminusint(gint* a, int b){
+  int k;
+    if(a->value[0]>=b){
+      a->value[0]-=b;
+    return;
+    }
+    k=1;
+    while(k<GINT_LENGTH && !(a->value[k])){
+      a->value[k]=GINT_DIGIT_MAX;
+      k++;
+    }
+    a->value[k]-=1;
+    a->value[0]+=GINT_DIGIT_MAX+1;
+    a->value[0]-=b;
   update(a);
 }
 ///This function is to use a mutiply b
@@ -307,7 +328,7 @@ void gmodpower(gint *n,gint *a,gint *b,gint* s){
 }
 int checker[10]={2,3,5,7,11,13,17,19,23,29};
 int gisprime(gint*a,int*knownprime,int sizeofknownprime){
-  gint bb,cc,dd,ee,*b=&bb,*c=&cc,*d=&dd,*e=&ee;
+  gint bb,cc,dd,ee,ff,qq,*q=&qq,*b=&bb,*c=&cc,*d=&dd,*e=&ee,*f=&ff;
   int i=0,s=0,j=0;
   for(i=0;i<sizeofknownprime;i++){
     int2gint(b,knownprime[i]);
@@ -317,32 +338,32 @@ int gisprime(gint*a,int*knownprime,int sizeofknownprime){
       return 0;
     }
   }
-  for(i=0;i<10;i++){
-    s=0;
+  s=0;
     gclone(a,c);
     int2gint(b,1);
     gminus(c,b);
-    int2gint(b,checker[i]);
+  gclone(c,f);
     while(giseven(c)){
       gshiftright(c);
       s++;
     }
-    gmodpower(a,b,c,d);
+  for(i=0;i<10;i++){
+    gclone(c,e);
+    int2gint(b,checker[i]);
+    gmodpower(a,b,e,d);
     if(ginteqint(d,1)) continue;
-    gclone(a,b);
-    int2gint(c,1);
-    gminus(b,c);
+    int flag=0;
     for(j=0;j<s;j++){
-      printf("%lld\n",d->value[0]);
-      gmutiply(d,d);
-      gdivide(d,a,c);
-      gdisplay(*a);
-      if(gequal(d,b)){
-        continue;
+      if(gequal(d,f)){
+        flag=1;
+        break;
       }
+      gmutiply(d,d);
+      gdivide(d,a,q);
     }
-      printf("%d\n",checker[i]);
+    if(!flag){
       return 0;
+    };
   }
   return 1;
 }
@@ -383,14 +404,34 @@ void ginverse(gint* n,gint* e,gint* d){
   }
   }
 }
+
+void grandomprime(gint *p,int digits,int* knownprime,int sizeofknownprime){
+  grandom(p,digits);
+  if(giseven(p)){
+    gintaddint(p,1);
+  }
+  while(!gisprime(p,knownprime,sizeofknownprime)){
+    gintaddint(p,2);
+  }
+}
+void gen(int digits,char* name){
+  gint p,q,n,phin;
+  int knownprime[3]={2,3,5};
+  int sizeofknownprime=3;
+  grandomprime(&p,digits,knownprime,sizeofknownprime);
+  grandomprime(&q,digits,knownprime,sizeofknownprime);
+  gclone(&p,&n);
+  gmutiply(&n,&q);
+  gintminusint(&p,1);
+  gintminusint(&q,1);
+  gclone(&p,&phin);
+  gmutiply(&phin,&q);
+}
 int main(){
   gint a,b,c,d,e;
-  int2gint(&a,37);
   // int2gint(&b,1023);
   // int2gint(&c,10);
-  int test[3]={2,3,5};
-  int n=3;
-  printf("%d\n",gisprime(&a,test,3));
+  gdisplay(a);
   // gmodpower(&b,&a,&c,&d);
   // gdisplay(d);
 }
