@@ -329,12 +329,13 @@ void gmodpower(gint *n,gint *a,gint *b,gint* s){
   gint *q =&qq;
   gdivide(a,n,q);
   int2gint(s,1);
-  while(!ginteqint(b,0)){
-    if(!giseven(b)) {
+  int blength = b->length * GINT_DIGIT;
+  for(int i=0;i < blength;i++){
+    int b_i=(b->value[i/GINT_DIGIT]>>(i%GINT_DIGIT))&1;
+    if(b_i) {
       gmutiply(s,a);
       gdivide(s,n,q);
     }
-    gshiftright(b);
     gmutiply(a,a);
     gdivide(a,n,q);
   }
@@ -506,7 +507,7 @@ void gen(int digits,char* name){
   }
 }
 int main(){
-  gen(1000,"byl");
+  gen(200,"byl");
   gint a,b;
   int2gint(&a,0x3);
   int2gint(&b,0x3);
