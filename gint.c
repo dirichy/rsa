@@ -121,6 +121,36 @@ void base64(unsigned long long a,char* str){
     a=a>>6;
   }
 }
+unsigned long long unbase64(char* str){
+  char chars[65]="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
+  unsigned long long num =0;
+  for(int j=0;j<GINT_DIGIT_BASE64;j++){
+    for(int k=0;k<64;k++){
+      if(!*str){
+        printf("unbase64 error!\n");
+        exit(1);
+      }
+      if(chars[k]==*str){
+        num+=k<<(j*6);
+        str++;
+        break;
+      }
+    }
+  }
+  return num;
+}
+
+void str2gint(char* str,gint* a){
+  for(int i=0;i<GINT_LENGTH;i++){
+    if(!*str){
+      a->length=i;
+      break;
+    }
+    a->value[i]=unbase64(str);
+    str+=GINT_DIGIT_BASE64;
+  }
+}
+
 ///This function is to print out a great number by BASE64 codes
 ///The output will be stored in str, and if you want to print str out 
 ///you will need printf function to assist you.
@@ -460,8 +490,8 @@ void gen(int digits,char* name){
   gmutiply(&phin,&q);
   int2gint(&e,0);
   while(ginteqint(&e,0)){
-    grandom(&d,digits);
-    gclone(&n,&temp1);
+    grandom(&d,digits*2);
+    gclone(&phin,&temp1);
     gclone(&d,&temp2);
     ginverse(&temp1,&temp2,&e);
   }
@@ -512,34 +542,75 @@ void gen(int digits,char* name){
 void gcode(gint* n,gint* message,gint* key,gint *output){
   return gmodpower(n,message,key,output);
 }
+void readrsa(char* name,gint*n,gint*phin,gint*d,gint*e)
+{
+  char str[100];
+  FILE* fp = NULL;
+  char buf[GINT_LENGTH*GINT_DIGIT_BASE64+128]={0};
+  int ret;
+  fp = fopen(stradd(name,".n",str),"r");
+  if(NULL == fp)
+  {
+    printf("open file err!\n");
+    exit(1);
+  }
+  ret = fread(buf,1,GINT_LENGTH*GINT_DIGIT_BASE64+128,fp);
+  str2gint(buf,n);
+  fclose(fp);
+  for(int i=0;i<GINT_LENGTH*GINT_DIGIT_BASE64+128;i++){
+    buf[i]='\0';
+  }
+  fp = fopen(stradd(name,".phin",str),"r");
+  if(NULL == fp)
+  {
+    printf("open file err!\n");
+    exit(1);
+  }
+  ret = fread(buf,1,GINT_LENGTH*GINT_DIGIT_BASE64+128,fp);
+  str2gint(buf,phin);
+  fclose(fp);
+
+  for(int i=0;i<GINT_LENGTH*GINT_DIGIT_BASE64+128;i++){
+    buf[i]='\0';
+  }
+  fp = fopen(stradd(name,".pub",str),"r");
+  if(NULL == fp)
+  {
+    printf("open file err!\n");
+    exit(1);
+  }
+  ret = fread(buf,1,GINT_LENGTH*GINT_DIGIT_BASE64+128,fp);
+  str2gint(buf,e);
+  fclose(fp);
+  for(int i=0;i<GINT_LENGTH*GINT_DIGIT_BASE64+128;i++){
+    buf[i]='\0';
+  }
+  fp = fopen(stradd(name,".sec",str),"r");
+  if(NULL == fp)
+  {
+    printf("open file err!\n");
+    exit(1);
+  }
+  ret = fread(buf,1,GINT_LENGTH*GINT_DIGIT_BASE64+128,fp);
+  str2gint(buf,d);
+  fclose(fp);
+}
 int main(){
-  long long begin=(long long)(time(NULL));
-  gen(1000,"byl");
-  long long endtime=(long long)(time(NULL));
-  printf("Used %lld seconds to generate\n",endtime-begin);
-  gint a,b;
-  int2gint(&a,0x3);
-  int2gint(&b,0x3);
-  gmutiply(&a,&b);
-  gdisplay(a);
-  gdisplay(b);
-  // int2gint(&a,0xca1c45);
-  // a.value[1]=0xd9f611;
-  // a.value[2]=880;
-  // update(&a);
-  // int test[1]={2};
-  // printf("%d",gisprime(&a,test,1));
-  // gint b;
-  // int2gint(&b,0);
-  // b.value[10]=1;
-  // gint r;
-  // update(&b);
-  // gdivide(&b,&a,&r);
-  // gdisplay(b);
-  // gShiftLeft(&a,2);
-  // gdisplay(a);
-  // int2gint(&b,1023);
-  // int2gint(&c,10);
-  // gmodpower(&b,&a,&c,&d);
-  // gdisplay(d);
+  gen(400,"byl");
+  gint e,d,n,phin,message,output,m;
+  readrsa("byl",&n,&phin,&d,&e);
+  int2gint(&message,10);
+  gdisplay(message);
+  gclone(&n,&m);
+  gcode(&m,&message,&e,&output);
+  gdisplay(output);
+  gclone(&n,&m);
+  gcode(&m,&output,&d,&message);
+  gdisplay(message);
+  // long long begin=(long long)(time(NULL));
+  // gen(1000,"byl");
+  // long long endtime=(long long)(time(NULL));
+  // printf("Used %lld seconds to generate\n",endtime-begin);
+  // unsigned long long a=unbase64("00Z0");
+  // printf("%lld",a);
 }
