@@ -596,7 +596,7 @@ void readrsa(char* name,gint*n,gint*phin,gint*d,gint*e)
   fclose(fp);
 }
 int main(){
-  gen(400,"byl");
+  gen(1000,"byl");
   gint e,d,n,phin,message,output,m;
   readrsa("byl",&n,&phin,&d,&e);
   int2gint(&message,10);
