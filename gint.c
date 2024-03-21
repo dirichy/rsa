@@ -1,23 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-///Brief introduction: We define a type for a great number and design a series number to operat numbers in the type. 
-///Consider a great number as an array with size GINT_LENGTH. 
-///Each element in the array is long long int type. We only use GINT_DIGIT digits of element 
-///to store some of digits of the great number. 
-///Each element in the array represent GINT_DIGIT_BASE64 digits in BASE64 coding.
-///In some case, we may need to abstract particular digits, and we use GINT_BASE64_DIGIT_NORMALIZER to 
-///obtain the lowest GINT_BASE64_DIGIT_NORMALIZER digits of a number.
-#define GINT_LENGTH 200
-#define GINT_DIGIT 24
-#define GINT_DIGIT_BASE64 4
-#define GINT_DIGIT_MAX 0xffffff
-#define GINT_BASE64_DIGIT_NORMALIZER 0x3f
-///This is to define a type for great numbers, we call it gint.
-typedef struct {
-  unsigned long long value[GINT_LENGTH];
-  int length;
-} gint;
+#include "gint.h"
+
 void gclone(gint* a,gint* b){
   for(int i=0;i<GINT_LENGTH;i++){
     b->value[i]=a->value[i];
@@ -125,10 +110,13 @@ unsigned long long unbase64(char* str){
   char chars[65]="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/";
   unsigned long long num =0;
   for(int j=0;j<GINT_DIGIT_BASE64;j++){
-    for(int k=0;k<64;k++){
-      if(!*str){
-        printf("unbase64 error!\n");
+    for(int k=0;k<=64;k++){
+      if(k==64){
+        printf("invaild input!%c\n",*str);
         exit(1);
+      }
+      if(!*str||*str=='\n'){
+        break;
       }
       if(chars[k]==*str){
         num+=k<<(j*6);
@@ -140,15 +128,30 @@ unsigned long long unbase64(char* str){
   return num;
 }
 
+///This function is to convert an int number to a gint number.
+///It will return gint number b converted by int a
+void int2gint(gint* b,int a){
+  b->value[0]=(unsigned long long)a;
+  for(int i=1;i <GINT_LENGTH;i++){
+    b->value[i]=(unsigned long long)0;
+  }
+  update(b);
+}
 void str2gint(char* str,gint* a){
-  for(int i=0;i<GINT_LENGTH;i++){
+  int2gint(a,0);
+  int i=0;
+  for(i=0;i<GINT_LENGTH;i++){
     if(!*str){
-      a->length=i;
       break;
     }
     a->value[i]=unbase64(str);
-    str+=GINT_DIGIT_BASE64;
+    for(int j=0;j<GINT_DIGIT_BASE64;j++){
+      if(*str&&*str!='\n'){
+        str++;
+      }
+    }
   }
+  update(a);
 }
 
 ///This function is to print out a great number by BASE64 codes
@@ -191,15 +194,6 @@ void grandom(gint*a,int digit){
     a->value[i]=0;
     i++;
   }
-}
-///This function is to convert an int number to a gint number.
-///It will return gint number b converted by int a
-void int2gint(gint* b,int a){
-  b->value[0]=(unsigned long long)a;
-  for(int i=1;i <GINT_LENGTH;i++){
-    b->value[i]=(unsigned long long)0;
-  }
-  update(b);
 }
 ///Inner function, don't use it manually
 int gint_le_or_leq_gint(gint* a,gint* b,int flag){
@@ -595,22 +589,22 @@ void readrsa(char* name,gint*n,gint*phin,gint*d,gint*e)
   str2gint(buf,d);
   fclose(fp);
 }
-int main(){
-  gen(1000,"byl");
-  gint e,d,n,phin,message,output,m;
-  readrsa("byl",&n,&phin,&d,&e);
-  int2gint(&message,10);
-  gdisplay(message);
-  gclone(&n,&m);
-  gcode(&m,&message,&e,&output);
-  gdisplay(output);
-  gclone(&n,&m);
-  gcode(&m,&output,&d,&message);
-  gdisplay(message);
-  // long long begin=(long long)(time(NULL));
-  // gen(1000,"byl");
-  // long long endtime=(long long)(time(NULL));
-  // printf("Used %lld seconds to generate\n",endtime-begin);
-  // unsigned long long a=unbase64("00Z0");
-  // printf("%lld",a);
-}
+// int main(){
+//   gen(1000,"byl");
+//   gint e,d,n,phin,message,output,m;
+//   readrsa("byl",&n,&phin,&d,&e);
+//   int2gint(&message,10);
+//   gdisplay(message);
+//   gclone(&n,&m);
+//   gcode(&m,&message,&e,&output);
+//   gdisplay(output);
+//   gclone(&n,&m);
+//   gcode(&m,&output,&d,&message);
+//   gdisplay(message);
+//   // long long begin=(long long)(time(NULL));
+//   // gen(1000,"byl");
+//   // long long endtime=(long long)(time(NULL));
+//   // printf("Used %lld seconds to generate\n",endtime-begin);
+//   // unsigned long long a=unbase64("00Z0");
+//   // printf("%lld",a);
+// }
