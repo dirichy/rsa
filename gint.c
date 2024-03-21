@@ -8,12 +8,12 @@
 ///Each element in the array represent GINT_DIGIT_BASE64 digits in BASE64 coding.
 ///In some case, we may need to abstract particular digits, and we use GINT_BASE64_DIGIT_NORMALIZER to 
 ///obtain the lowest GINT_BASE64_DIGIT_NORMALIZER digits of a number.
-#define GINT_LENGTH 35
+#define GINT_LENGTH 100
 #define GINT_DIGIT 24
 #define GINT_DIGIT_BASE64 4
 #define GINT_DIGIT_MAX 0xffffff
-///This is to define a type for great numbers, we call it gint.
 #define GINT_BASE64_DIGIT_NORMALIZER 0x3f
+///This is to define a type for great numbers, we call it gint.
 typedef struct {
   unsigned long long value[GINT_LENGTH];
   int length;
@@ -45,6 +45,13 @@ void update(gint* a){
   }
 }
 
+int ginteqint(gint*a,int b){
+  if(a->value[0]!=b) return 0;
+  for(int i=1;i<a->length;i++){
+    if(a->value[i]) return 0;
+  }
+  return 1;
+}
 int gequal(gint*a,gint*b){
   for(int i=0;i<GINT_LENGTH;i++){
     if(a->value[i]!=b->value[i]){
@@ -195,7 +202,8 @@ int gintgeqgint(gint* a,gint* b){
 ///This fuction is to add two great numbers a ,b
 ///And a will be the result of a+b
 void gadd(gint* a, gint* b){
-  for(int i =0;i < GINT_LENGTH;i++ ){
+  int length=a->length>b->length?a->length:b->length;
+  for(int i =0;i < length;i++ ){
     a->value[i]+=b->value[i];
   }
   update(a);
@@ -209,14 +217,18 @@ void gintaddint(gint* a, int b){
 ///This fuction is to use a minus b 
 ///And a will be the result of a-b
 void gminus(gint* a, gint* b){
-  int k;
-  for(int i =0;i < GINT_LENGTH;i++ ){
+  if(gintlegint(a,b)){
+    printf("minus erroe!\n");
+    exit(1);
+  }
+  int k,length=a->length;
+  for(int i =0;i < length;i++ ){
     if(a->value[i]>=b->value[i]){
       a->value[i]-=b->value[i];
       continue;
     }
     k=i+1;
-    while(k<GINT_LENGTH && !(a->value[k])){
+    while(k<length && !(a->value[k])){
       a->value[k]=GINT_DIGIT_MAX;
       k++;
     }
@@ -244,21 +256,36 @@ void gintminusint(gint* a, int b){
   update(a);
 }
 ///This function is to use a mutiply b
-///And a will be the result of a*b
+///And a will be the result of a*;b
 void gmutiply(gint* a,gint* b){
-  for(int i=GINT_LENGTH-1;i>=0;i--){
+  int length=a->length+b->length-1;
+  for(int i=length;i>=0;i--){
     a->value[i]*=b->value[0];
-    for(int j=0;j<i;j++){
+    if(i){
+      if(a==b){
+        a->value[i]*=2;
+      }else{
+        a->value[i]+=a->value[0]*b->value[i];
+      }
+    }
+    for(int j=1;j<i;j++){
       a->value[i]+=a->value[j]*b->value[i-j];
     }
   }
   update(a);
 }
+void gintmodint(gint*a,int b){
+  for(int i=a->length-1;i>0;i--){
+    a->value[i-1]+=(a->value[i]%b)<<GINT_DIGIT;
+  }
+  a->value[0]%=b;
+  a->length=1;
+}
 ///This function is to realize a = qb +r. And it turns out that 
 ///a = r, q is q
 void gdivide(gint* a,gint* b,gint* q){
   int2gint(q,0);
-  if(gintleqgint(b,q)){
+  if(ginteqint(b,0)){
     printf("devide 0");
     exit(1);
   }
@@ -266,31 +293,23 @@ void gdivide(gint* a,gint* b,gint* q){
     int2gint(q,0);
     return;
   }
-  int Scale=a->length-b->length;
-  if(Scale>0){
-    gShiftLeft(b,Scale-1);
-    Scale-=1;
+  int scale=a->length-b->length;
+  if(scale>0){
+    gShiftLeft(b,scale-1);
+    scale-=1;
   }
-  int scale=0;
-  while(gintlegint(b,a)&((b->value[GINT_LENGTH-1])<=0x8000000000000000)){
+  scale*=GINT_DIGIT;
+  while(gintlegint(b,a)&&((b->value[GINT_LENGTH-1])<=0x8000000000000000)){
     gshiftleft(b);
     scale++;
   }
-  while(scale>=30){
-    scale-=30;
-    Scale++;
-  }
-  while(Scale || scale){
+  while(scale){
     if(gintleqgint(b,a)){
       gminus(a,b);
-      q->value[Scale]+=1<<scale;
+      q->value[scale/GINT_DIGIT]+=1<<(scale%GINT_DIGIT);
     }
     scale--;
     gshiftright(b);
-    if(scale<0){
-      scale=GINT_LENGTH-1;
-      Scale--;
-    }
   }
   if(gintleqgint(b,a)){
     gminus(a,b);
@@ -299,13 +318,6 @@ void gdivide(gint* a,gint* b,gint* q){
   update(a);
   update(q);
   update(b);
-}
-int ginteqint(gint*a,int b){
-  if(a->value[0]!=b) return 0;
-  for(int i=1;i<GINT_LENGTH;i++){
-    if(a->value[i]) return 0;
-  }
-  return 1;
 }
 int giseven(gint* a){
   return !(a->value[0]&1);
@@ -329,12 +341,11 @@ void gmodpower(gint *n,gint *a,gint *b,gint* s){
 }
 int checker[10]={2,3,5,7,11,13,17,19,23,29};
 int gisprime(gint*a,int*knownprime,int sizeofknownprime){
-  gint bb,cc,dd,ee,ff,qq,*q=&qq,*b=&bb,*c=&cc,*d=&dd,*e=&ee,*f=&ff;
+  gint bb,cc,dd,ee,ff,qq,*q=&qq,*b=&bb,*c=&cc,*d=&dd,*e=&ee,*f=&ff,gg,*g=&gg;
   int i=0,s=0,j=0;
   for(i=0;i<sizeofknownprime;i++){
-    int2gint(b,knownprime[i]);
     gclone(a,c);
-    gdivide(c,b,d);
+    gintmodint(c,knownprime[i]);
     if(ginteqint(c,0)){
       return 0;
     }
@@ -351,7 +362,8 @@ int gisprime(gint*a,int*knownprime,int sizeofknownprime){
   for(i=0;i<10;i++){
     gclone(c,e);
     int2gint(b,checker[i]);
-    gmodpower(a,b,e,d);
+    gclone(a,g);
+    gmodpower(g,b,e,d);
     if(ginteqint(d,1)) continue;
     int flag=0;
     for(j=0;j<s;j++){
@@ -360,7 +372,8 @@ int gisprime(gint*a,int*knownprime,int sizeofknownprime){
         break;
       }
       gmutiply(d,d);
-      gdivide(d,a,q);
+      gclone(a,g);
+      gdivide(d,g,q);
     }
     if(!flag){
       return 0;
@@ -405,14 +418,16 @@ void ginverse(gint* n,gint* e,gint* d){
   }
   }
 }
-
 void grandomprime(gint *p,int digits,int* knownprime,int sizeofknownprime){
+  int i=0;
   grandom(p,digits);
   if(giseven(p)){
     gintaddint(p,1);
   }
   while(!gisprime(p,knownprime,sizeofknownprime)){
     gintaddint(p,2);
+    i++;
+      printf("tested %d numbers\n",i);
   }
 }
 char* stradd(char* a,char*b,char*c){
@@ -427,11 +442,12 @@ char* stradd(char* a,char*b,char*c){
     i++;
     b++;
   }
+  c[i]='\0';
   return c;
 }
 void gen(int digits,char* name){
   gint p,q,n,phin,e,d,temp1,temp2;
-  int knownprime[3]={2,3,5};
+  int knownprime[]={2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61};
   int sizeofknownprime=3;
   grandomprime(&p,digits,knownprime,sizeofknownprime);
   grandomprime(&q,digits,knownprime,sizeofknownprime);
@@ -449,7 +465,7 @@ void gen(int digits,char* name){
     ginverse(&temp1,&temp2,&e);
   }
   char str[digits/3+128];
-  if(name[0]){
+  if(!name[0]){
     name="rsabw";
   }
   FILE*file=fopen(stradd(name,".pub",str),"w");
@@ -490,7 +506,28 @@ void gen(int digits,char* name){
   }
 }
 int main(){
-  gen(30,"byl");
+  gen(1000,"byl");
+  gint a,b;
+  int2gint(&a,0x3);
+  int2gint(&b,0x3);
+  gmutiply(&a,&b);
+  gdisplay(a);
+  gdisplay(b);
+  // int2gint(&a,0xca1c45);
+  // a.value[1]=0xd9f611;
+  // a.value[2]=880;
+  // update(&a);
+  // int test[1]={2};
+  // printf("%d",gisprime(&a,test,1));
+  // gint b;
+  // int2gint(&b,0);
+  // b.value[10]=1;
+  // gint r;
+  // update(&b);
+  // gdivide(&b,&a,&r);
+  // gdisplay(b);
+  // gShiftLeft(&a,2);
+  // gdisplay(a);
   // int2gint(&b,1023);
   // int2gint(&c,10);
   // gmodpower(&b,&a,&c,&d);
