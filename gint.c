@@ -506,6 +506,12 @@ void gen(int digits,char* name){
     perror("Error opening file");
   }
 }
+
+/// this function is to do the encode or decode
+/// will return message^secret mod n
+void gcode(gint* n,gint* message,gint* key,gint *output){
+  return gmodpower(n,message,key,output);
+}
 int main(){
   gen(2000,"byl");
   gint a,b;
