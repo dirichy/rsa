@@ -506,8 +506,12 @@ void gen(int digits,char* name){
     perror("Error opening file");
   }
 }
+
 int main(){
-  gen(200,"byl");
+  long long begin=(long long)(time(NULL));
+  gen(1000,"byl");
+  long long endtime=(long long)(time(NULL));
+  printf("Used %lld seconds to generate\n",endtime-begin);
   gint a,b;
   int2gint(&a,0x3);
   int2gint(&b,0x3);
