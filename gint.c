@@ -384,13 +384,14 @@ int gisprime(gint*a,int*knownprime,int sizeofknownprime){
       gshiftright(c);
       s++;
     }
+  int flag=0;
   for(i=0;i<10;i++){
     gclone(c,e);
     int2gint(b,checker[i]);
     gclone(a,g);
     gmodpower(g,b,e,d);
     if(ginteqint(d,1)) continue;
-    int flag=0;
+    flag=0;
     for(j=0;j<s;j++){
       if(gequal(d,f)){
         flag=1;
@@ -402,7 +403,7 @@ int gisprime(gint*a,int*knownprime,int sizeofknownprime){
     }
     if(!flag){
       return 0;
-    };
+    }
   }
   return 1;
 }
@@ -449,6 +450,7 @@ void grandomprime(gint *p,int digits,int* knownprime,int sizeofknownprime){
   if(giseven(p)){
     gintaddint(p,1);
   }
+  int temp=0;
   while(!gisprime(p,knownprime,sizeofknownprime)){
     gintaddint(p,2);
     i++;
@@ -483,16 +485,16 @@ void gen(int digits,char* name){
   gclone(&p,&phin);
   gmutiply(&phin,&q);
   int2gint(&e,0);
+  printf("1\n");
   while(ginteqint(&e,0)){
     grandom(&d,digits*2);
     gclone(&phin,&temp1);
     gclone(&d,&temp2);
     ginverse(&temp1,&temp2,&e);
   }
-  char str[digits/3+128];
-  if(!name[0]){
-    name="rsabw";
-  }
+  printf("2\n");
+  char str[GINT_LENGTH*GINT_DIGIT_BASE64+128];
+  printf("3\n");
   FILE*file=fopen(stradd(name,".pub",str),"w");
   if (file != NULL){
     gprint(e,str);
@@ -502,6 +504,7 @@ void gen(int digits,char* name){
   else{
     perror("Error opening file");
   }
+  printf("4\n");
   file=fopen(stradd(name,".sec",str),"w");
   if (file != NULL){
     gprint(d,str);

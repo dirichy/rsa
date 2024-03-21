@@ -67,7 +67,7 @@ void work(char option,char ** args,int argc){
   if(*input){
     FILE* fp = NULL;
     int ret;
-    fp = fopen(stradd(name,".n",temp),"r");
+    fp = fopen(input,"r");
     if(NULL == fp){
       printf("open file err!\n");
       exit(1);
@@ -109,7 +109,7 @@ int main(int argc,char *argv[]){
   }
   if(argv[1][0]=='-'){
     switch(argv[1][1]){
-      case 'g': gen(1024,argv[2]);break;
+      case 'g': gen(1024,argc>2?argv[2]:"rsabw");break;
       case 'h': help();break;
       case 'e': 
       case 'd':
