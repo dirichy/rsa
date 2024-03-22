@@ -49,12 +49,15 @@ int gequal(gint*a,gint*b){
 void gshiftright(gint* a){
   a->value[0]=(a->value[0])>>1;
   unsigned long long temp;
-  for(int i=0;i<GINT_LENGTH-1;i++){
+  for(int i=0;i<a->length;i++){
     temp=(a->value[i+1])&1;
     a->value[i+1]=(a->value[i+1])>>1;
-    a->value[i]=a->value[i]+(temp<<(GINT_DIGIT-1));
+    a->value[i]=a->value[i]|(temp<<(GINT_DIGIT-1));
   }
-  update(a);
+  if(a->value[a->length-1]){
+    return;
+  }
+  a->length--;
 }
 ///This function is to shift one left digit in gint a.
 ///a will convert to the left-shifted version.
