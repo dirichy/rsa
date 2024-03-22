@@ -1,12 +1,12 @@
+#include <stdatomic.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<string.h>
 #include "gint.h"
 
 void gclone(gint* a,gint* b){
-  for(int i=0;i<GINT_LENGTH;i++){
-    b->value[i]=a->value[i];
-  }
+  memcpy(b->value,a->value,sizeof(long long)*GINT_LENGTH);
   b->length=a->length;
 }
 ///This function is to deal with carry when calculating and the size of a gint number when it comes to 
@@ -131,11 +131,9 @@ unsigned long long unbase64(char* str){
 ///This function is to convert an int number to a gint number.
 ///It will return gint number b converted by int a
 void int2gint(gint* b,int a){
-  b->value[0]=(unsigned long long)a;
-  for(int i=1;i <GINT_LENGTH;i++){
-    b->value[i]=(unsigned long long)0;
-  }
-  update(b);
+  b->value[0]=a & GINT_DIGIT_MAX;
+  b->value[1]=a >> GINT_DIGIT;
+  memset(b->value+2,0,sizeof(long long)*(GINT_LENGTH-2));
 }
 void str2gint(char* str,gint* a){
   int2gint(a,0);
@@ -593,21 +591,35 @@ void readrsa(char* name,gint*n,gint*phin,gint*d,gint*e)
   fclose(fp);
 }
 // int main(){
-//   gen(1000,"byl");
-//   gint e,d,n,phin,message,output,m;
-//   readrsa("byl",&n,&phin,&d,&e);
-//   int2gint(&message,10);
-//   gdisplay(message);
-//   gclone(&n,&m);
-//   gcode(&m,&message,&e,&output);
-//   gdisplay(output);
-//   gclone(&n,&m);
-//   gcode(&m,&output,&d,&message);
-//   gdisplay(message);
-//   // long long begin=(long long)(time(NULL));
-//   // gen(1000,"byl");
-//   // long long endtime=(long long)(time(NULL));
-//   // printf("Used %lld seconds to generate\n",endtime-begin);
-//   // unsigned long long a=unbase64("00Z0");
-//   // printf("%lld",a);
+//   // int32_t a[2],b[2];
+//   // a[0]=0xffffffff;
+//   // *((int64_t *)&a)=0xfffffffffff;
+//   // printf("%d",a[1]);
+//   srand(time(NULL));
+//   clock_t time1=clock();
+//   gint a[1000],b[1000],c[1000];
+//   clock_t time2=clock();
+//   for(int i=0;i<1000;i++){
+//     grandom(a+i,1024);
+//     grandom(b+i,1024);
+//   }
+//   // for(int i=0;i<1000;i++){
+//   //   if(gintlegint(a+i,b+i)){
+//   //     gclone(a+i,c+i);
+//   //     gclone(b+i,a+i);
+//   //     gclone(c+i,b+i);
+//   //   }
+//   // }
+//   clock_t time3=clock();
+//   for(int i=0;i<1000;i++){
+//     // gmutiply(a+i,b+i);
+//     // gdivide(a+i,b+i,c+i);
+//     // gadd(a+i,b+i);
+//     // gminus(a+i,b+i);
+//     // gclone(a+i,b+i);
+//     int2gint(a+i,9);
+//     // memcpy(a+i,b+i,sizeof(long long)*GINT_LENGTH);
+//   }
+//   clock_t time4=clock();
+//   printf("%ld %ld %ld",time2-time1,time3-time2,time4-time3);
 // }

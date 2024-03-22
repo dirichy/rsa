@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "gint.h"
-char Flags[9] = "oigedsrh";
+// char Flags[9] = "oigedsrh";
 void help(){
   printf("Usage : rsabw -g [<name>]\n");
   printf("   or : rsabw -h\n");
