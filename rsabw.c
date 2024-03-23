@@ -109,7 +109,7 @@ int main(int argc,char *argv[]){
   }
   if(argv[1][0]=='-'){
     switch(argv[1][1]){
-      case 'g': gen(1024,argc>2?argv[2]:"rsabw");break;
+      case 'g': gen(128,argc>2?argv[2]:"rsabw");break;
       case 'h': help();break;
       case 'e': 
       case 'd':

@@ -6,9 +6,10 @@
 ///In some case, we may need to abstract particular digits, and we use GINT_BASE64_DIGIT_NORMALIZER to 
 ///obtain the lowest GINT_BASE64_DIGIT_NORMALIZER digits of a number.
 #define GINT_LENGTH 200
-#define GINT_DIGIT 24
-#define GINT_DIGIT_BASE64 4
-#define GINT_DIGIT_MAX 0xffffff
+#define GINT_DIGIT 16
+#define GINT_DIGIT_BASE64 3
+#define GINT_DIGIT_CHAR 2
+#define GINT_DIGIT_MAX 0xffff
 #define GINT_BASE64_DIGIT_NORMALIZER 0x3f
 ///This is to define a type for great numbers, we call it gint.
 typedef struct {
