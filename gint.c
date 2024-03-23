@@ -434,11 +434,8 @@ int gisprime(gint*a,int*knownprime,int sizeofknownprime){
         break;
       }
       gmutiply(d,d);
-    printf("%lld\n",(long long)u);
       gclone(u,g);
-    printf("%lld\n",(long long)u);
       gdivide(d,g,q);
-    printf("%lld\n",(long long)u);
     }
     if(!flag){
       return 0;
