@@ -3,16 +3,19 @@
 #include "gint.h"
 // char Flags[9] = "oigedsrh";
 void help(){
-  printf("Usage : rsabw -g [<name>]\n");
+  printf("Usage : rsabw -g [<name> [<length>]]\n");
   printf("   or : rsabw -h\n");
   printf("   or : rsabw -<e|d|s|r> [<name>] [-i <file> | -] [-o <file> | -]\n");
-  printf("-g [<name>] : to generate a pair of public key and secret key with corresponding n and phi(n) \n");
+  printf("-g [<name> [<length]] : to generate a pair of public key and secret key with corresponding n and phi(n) \n");
   printf("              and you can name the pair of key by the optional parameter <name>, otherwise it will be default.\n");
+  printf("              you can spicefy the length by yourself, the length should no more than 1024 and at least 3. By default it's 1024.\n");
   printf("-e [<name>] : to encode content by public key, you can appoint one pair of your keys by optional parameter <name>,\n");
   printf("              otherwise it will be encoded by the default key. If you use flag -e with an intput flag -i,\n");
   printf("              then you can appoint the source of intput, otherwise the intput form is stdin.\n");
   printf("              And you can also appoint a position to store the encoded content by an output flag -o, if not \n");
   printf("              your output will be a form of stdin.\n");
+  printf("              At now this program only support base64 input, i.e.,a-z,A-Z,0-9,/,and +, 64 different chars. Other chars not support.\n");
+  printf("              Your input should no longer than length/6, by default, it should be 170.\n");
   printf("-d [<name>] : to decode content by secret key, same as -e.\n");
   printf("-s [<name>] : to encoded content by secret key, same as -e.\n");
   printf("-r [<name>] : to decode content by public key, same as -e.\n");
@@ -102,6 +105,11 @@ void work(char option,char ** args,int argc){
     printf("%s\n",outstr);
   }
 }
+int str2int(char* a){
+  int b;
+  sscanf(a,"%d",&b);
+  return b;
+}
 int main(int argc,char *argv[]){
   if(argc==1){
     help();
@@ -109,7 +117,7 @@ int main(int argc,char *argv[]){
   }
   if(argv[1][0]=='-'){
     switch(argv[1][1]){
-      case 'g': gen(1024,argc>2?argv[2]:"rsabw");break;
+      case 'g': gen(argc>3?str2int(argv[3]):1024,argc>2?argv[2]:"rsabw");break;
       case 'h': help();break;
       case 'e': 
       case 'd':
@@ -117,6 +125,9 @@ int main(int argc,char *argv[]){
       case 'r': work(argv[1][1],argv,argc);break;
       default: help();
     }
+  }else{
+    help();
+    exit(1);
   }
 }
 // int main(){
