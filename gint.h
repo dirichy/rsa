@@ -5,7 +5,7 @@
 ///Each element in the array represent GINT_DIGIT_BASE64 digits in BASE64 coding.
 ///In some case, we may need to abstract particular digits, and we use GINT_BASE64_DIGIT_NORMALIZER to 
 ///obtain the lowest GINT_BASE64_DIGIT_NORMALIZER digits of a number.
-#define GINT_LENGTH 200
+#define GINT_LENGTH 256
 #define GINT_DIGIT 16
 #define GINT_DIGIT_BASE64 3
 #define GINT_DIGIT_CHAR 2
