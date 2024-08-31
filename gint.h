@@ -5,11 +5,13 @@
 ///Each element in the array represent GINT_DIGIT_BASE64 digits in BASE64 coding.
 ///In some case, we may need to abstract particular digits, and we use GINT_BASE64_DIGIT_NORMALIZER to 
 ///obtain the lowest GINT_BASE64_DIGIT_NORMALIZER digits of a number.
-#define GINT_LENGTH 256
+#define GINT_LENGTH 512
 #define GINT_DIGIT 24
 #define GINT_DIGIT_BASE64 4
 #define GINT_DIGIT_MAX 0xffffff
 #define GINT_BASE64_DIGIT_NORMALIZER 0x3f
+#define TRUE 1
+#define FALSE 0
 ///This is to define a type for great numbers, we call it gint.
 typedef struct {
   unsigned long long value[GINT_LENGTH];

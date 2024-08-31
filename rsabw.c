@@ -1,131 +1,156 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "gint.h"
+#include <stdio.h>
+#include <stdlib.h>
 // char Flags[9] = "oigedsrh";
-void help(){
+void help() {
   printf("Usage : rsabw -g [<name> [<length>]]\n");
-  printf("   or : rsabw -h\n");
-  printf("   or : rsabw -<e|d|s|r> [<name>] [-i <file> | -] [-o <file> | -]\n");
-  printf("-g [<name> [<length]] : to generate a pair of public key and secret key with corresponding n and phi(n) \n");
-  printf("              and you can name the pair of key by the optional parameter <name>, otherwise it will be default.\n");
-  printf("              you can spicefy the length by yourself, the length should no more than 1024 and at least 3. By default it's 1024.\n");
-  printf("-e [<name>] : to encode content by public key, you can appoint one pair of your keys by optional parameter <name>,\n");
-  printf("              otherwise it will be encoded by the default key. If you use flag -e with an intput flag -i,\n");
-  printf("              then you can appoint the source of intput, otherwise the intput form is stdin.\n");
-  printf("              And you can also appoint a position to store the encoded content by an output flag -o, if not \n");
-  printf("              your output will be a form of stdin.\n");
-  printf("              At now this program only support base64 input, i.e.,a-z,A-Z,0-9,/,and +, 64 different chars. Other chars not support.\n");
-  printf("              Your input should no longer than length/6, by default, it should be 170.\n");
+  printf("or : rsabw -h\n");
+  printf("or : rsabw -<e|d|s|r> [<name>] [-i <file> | -] [-o <file> | -]\n");
+  printf(
+      "-g [<name> [<length]] : to generate a pair of public key and secret \n"
+      "key with corresponding n and phi(n) and you can name the pair of key \n"
+      "by the optional parameter <name>, otherwise it will be default. you \n"
+      "can spicefy the length by yourself, the length should no more than \n"
+      "1024 and at least 3. By default it's 1024.\n");
+  printf(
+      "-e [<name>] : to encode content by public key, you can appoint one pair "
+      "\n"
+      "of your keys by optional parameter <name>, otherwise it will be encoded "
+      "\n"
+      "by the default key. If you use flag -e with an intput flag -i, then you "
+      "\n"
+      "can appoint the source of intput, otherwise the intput form is stdin. \n"
+      "And you can also appoint a position to store the encoded content by an "
+      "\n"
+      "output flag -o, if not your output will be a form of stdin. At now this "
+      "\n"
+      "program only support base64 input, i.e.,a-z,A-Z,0-9,/,and +, 64 \n"
+      "different chars. Other chars not support. Your input should no longer \n"
+      "than length/6, by default, it should be 170.\n");
   printf("-d [<name>] : to decode content by secret key, same as -e.\n");
   printf("-s [<name>] : to encoded content by secret key, same as -e.\n");
   printf("-r [<name>] : to decode content by public key, same as -e.\n");
-  printf("[-i <file>|-] : to appoint the source of intput content, it is an optional parameter, if you don't use it,\n");
-  printf("                the intput will be a stdin form.\n");
-  printf("[-o <file>|-] : to appoint the aim of output content, it is an optional parameter, if you don't use it,\n");
-  printf("                the output will be a stdin form.\n");
-  printf("-h : to show the help document of command rsabw\n");
+  printf("[-i <file>|-] : to appoint the source of intput content, it is an \n"
+         "optional parameter, if you don't specify it, the intput will be "
+         "stdin.\n");
+  printf("[-o <file>|-] : to appoint the aim of output content, it is an "
+         "optional \n"
+         "parameter, if you don't specify it, the output will be stdout.\n");
+  printf("-h : to show this help\n");
 }
 
-void work(char option,char ** args,int argc){
-  char input[100]={0},output[100]={0},name[100]={0};
-  char instr[GINT_LENGTH*GINT_DIGIT_BASE64+128]={0},outstr[GINT_LENGTH*GINT_DIGIT_BASE64+128]={0},temp[100]={0};
-  gint n,phin,e,d;
-  int i=2;
-  if((argc>2)&&(args[2][0]!='-')){
-    sprintf(name,"%s",args[2]);
+void work(char option, char **args, int argc) {
+  char input[100] = {0}, output[100] = {0}, name[100] = {0};
+  char instr[GINT_LENGTH * GINT_DIGIT_BASE64 +
+             128] = {0},
+             outstr[GINT_LENGTH * GINT_DIGIT_BASE64 + 128] = {0},
+             temp[100] = {0};
+  gint n, phin, e, d;
+  int i = 2;
+  if ((argc > 2) && (args[2][0] != '-')) {
+    sprintf(name, "%s", args[2]);
     i++;
-  }else{
-    sprintf(name,"rsabw");
+  } else {
+    sprintf(name, "rsabw");
   }
-  while(i<argc){
-    switch(args[i][0]){
-      case '-': 
-        switch(args[i][1]){
-          case 'i':
-            if(i+1>=argc||*input){
-              help();
-              exit(1);
-            }
-            sprintf(input,"%s",args[i+1]);break;
-          case 'o':
-            if(i+1>=argc||*output){
-              help();
-              exit(1);
-            }
-            sprintf(output,"%s",args[i+1]);break;
-          default:
-            help();
-            exit(1);
-        };
-        break;
-      default:
-        if(i+1<argc&&args[i+1][0]!='-'){
+  while (i < argc) {
+    switch (args[i][0]) {
+    case '-':
+      switch (args[i][1]) {
+      case 'i':
+        if (i + 1 >= argc || *input) {
           help();
           exit(1);
         }
+        sprintf(input, "%s", args[i + 1]);
+        break;
+      case 'o':
+        if (i + 1 >= argc || *output) {
+          help();
+          exit(1);
+        }
+        sprintf(output, "%s", args[i + 1]);
+        break;
+      default:
+        help();
+        exit(1);
+      };
+      break;
+    default:
+      if (i + 1 < argc && args[i + 1][0] != '-') {
+        help();
+        exit(1);
+      }
     }
     i++;
   }
-  readrsa(name,&n,&phin,&d,&e);
-  if(*input){
-    FILE* fp = NULL;
+  readrsa(name, &n, &phin, &d, &e);
+  if (*input) {
+    FILE *fp = NULL;
     int ret;
-    fp = fopen(input,"r");
-    if(NULL == fp){
+    fp = fopen(input, "r");
+    if (NULL == fp) {
       printf("open file err!\n");
       exit(1);
     }
-    ret = fread(instr,1,GINT_LENGTH*GINT_DIGIT_BASE64+128,fp);
+    ret = fread(instr, 1, GINT_LENGTH * GINT_DIGIT_BASE64 + 128, fp);
   } else {
-    fgets(instr,GINT_LENGTH*GINT_DIGIT_BASE64+128,stdin);
+    fgets(instr, GINT_LENGTH * GINT_DIGIT_BASE64 + 128, stdin);
   }
-  gint ingint,outgint,key;
-  str2gint(instr,&ingint);
-  if(option=='d'||option=='s'){
-    gclone(&e,&key);
-  }else{
-    if(option=='e'||option=='r'){
-      gclone(&d,&key);
-    }else{
+  gint ingint, outgint, key;
+  str2gint(instr, &ingint);
+  if (option == 'd' || option == 's') {
+    gclone(&e, &key);
+  } else {
+    if (option == 'e' || option == 'r') {
+      gclone(&d, &key);
+    } else {
       printf("error option!\n");
       exit(1);
-    }}
-  gcode(&n,&ingint,&key,&outgint);
-  gprint(outgint,outstr);
-  if(*output){
-    FILE*file=fopen(output,"w");
-    if (file != NULL){
-      fprintf(file,"%s",outstr);
-      fclose(file);
     }
-    else{
+  }
+  gcode(&n, &ingint, &key, &outgint);
+  gprint(outgint, outstr);
+  if (*output) {
+    FILE *file = fopen(output, "w");
+    if (file != NULL) {
+      fprintf(file, "%s", outstr);
+      fclose(file);
+    } else {
       perror("Error opening file");
     }
-  }else{
-    printf("%s\n",outstr);
+  } else {
+    printf("%s\n", outstr);
   }
 }
-int str2int(char* a){
+int str2int(char *a) {
   int b;
-  sscanf(a,"%d",&b);
+  sscanf(a, "%d", &b);
   return b;
 }
-int main(int argc,char *argv[]){
-  if(argc==1){
+int main(int argc, char *argv[]) {
+  if (argc == 1) {
     help();
     exit(0);
   }
-  if(argv[1][0]=='-'){
-    switch(argv[1][1]){
-      case 'g': gen(argc>3?str2int(argv[3]):1024,argc>2?argv[2]:"rsabw");break;
-      case 'h': help();break;
-      case 'e': 
-      case 'd':
-      case 's':
-      case 'r': work(argv[1][1],argv,argc);break;
-      default: help();
+  if (argv[1][0] == '-') {
+    switch (argv[1][1]) {
+    case 'g':
+      gen(argc > 3 ? str2int(argv[3]) : 512, argc > 2 ? argv[2] : "rsabw");
+      break;
+    case 'h':
+      help();
+      break;
+    case 'e':
+    case 'd':
+    case 's':
+    case 'r':
+      work(argv[1][1], argv, argc);
+      break;
+    default:
+      help();
     }
-  }else{
+  } else {
     help();
     exit(1);
   }
